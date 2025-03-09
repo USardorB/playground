@@ -1,40 +1,22 @@
 import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:playground/home_page.dart';
-import 'package:playground/settings_inherited_model.dart';
+import 'package:playground/inherited_notifier.dart';
 
-class MiniApp extends StatefulWidget {
+class MiniApp extends StatelessWidget {
   const MiniApp({super.key});
-
-  @override
-  State<MiniApp> createState() => _MiniAppState();
-}
-
-class _MiniAppState extends State<MiniApp> {
-  bool isDark = false;
-  String name = 'Sardor';
-  String language = 'English';
 
   @override
   Widget build(BuildContext context) {
     log('MiniApp got (re)build');
-    return MaterialApp(
-      title: 'Test App',
-      debugShowCheckedModeBanner: false,
-      home: SettingsInheritedModel(
-        language: language,
-        isDark: isDark,
-        name: name,
-        onLanguageChanged: (value) {
-          log('Language has been changed');
-          setState(() {
-            language = value!.name;
-          });
-        },
-        onThemeChanged: (value) => setState(() => isDark = value),
-        onNameChanged: (value) => setState(() => name = value),
-        child: const HomePage(),
+    return SettingsInheritedModifier(
+      notifier: ValueNotifier(
+        AppSettings(name: 'Sardor', isDark: false, language: 'English'),
+      ),
+      child: const MaterialApp(
+        title: 'Test App',
+        debugShowCheckedModeBanner: false,
+        home: HomePage(),
       ),
     );
   }

@@ -2,7 +2,7 @@ import 'dart:developer';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:playground/settings_inherited_model.dart';
+import 'package:playground/inherited_notifier.dart';
 
 class SettingsPage extends StatelessWidget {
   const SettingsPage({super.key});
@@ -27,31 +27,41 @@ class SettingsPage extends StatelessWidget {
                   DropdownMenuEntry(value: Language.uz, label: 'Uzbek'),
                 ],
                 onSelected: (value) {
-                  SettingsInheritedModel.of(
-                    context,
-                    SettingsAspect.language,
-                  )?.onLanguageChanged(value);
+                  final current = SettingsInheritedModifier.of(context).value;
+                  SettingsInheritedModifier.of(context).value = AppSettings(
+                    name: current.name,
+                    isDark: current.isDark,
+                    language: value?.name ?? 'nothing' 'selected',
+                  );
                 },
               ),
             ),
             ListTile(
               title: const Text('Is Dark:'),
               trailing: CupertinoSwitch(
-                value: true,
-                onChanged: SettingsInheritedModel.of(
-                  context,
-                  SettingsAspect.language,
-                )?.onThemeChanged,
+                value: SettingsInheritedModifier.of(context).value.isDark,
+                onChanged: (value) {
+                  final current = SettingsInheritedModifier.of(context).value;
+                  SettingsInheritedModifier.of(context).value = AppSettings(
+                    name: current.name,
+                    isDark: !current.isDark,
+                    language: current.language,
+                  );
+                },
               ),
             ),
             TextField(
               decoration: const InputDecoration(
                 label: Text('Name:'),
               ),
-              onSubmitted: SettingsInheritedModel.of(
-                context,
-                SettingsAspect.language,
-              )?.onNameChanged,
+              onSubmitted: (value) {
+                final current = SettingsInheritedModifier.of(context).value;
+                SettingsInheritedModifier.of(context).value = AppSettings(
+                  name: value,
+                  isDark: current.isDark,
+                  language: current.language,
+                );
+              },
             ),
           ],
         ),

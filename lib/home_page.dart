@@ -1,7 +1,7 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
-import 'package:playground/settings_inherited_model.dart';
+import 'package:playground/inherited_notifier.dart';
 import 'package:playground/settings_page.dart';
 
 class HomePage extends StatelessWidget {
@@ -9,6 +9,7 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final model = SettingsInheritedModifier.of(context).value;
     log('HomePage got (re)build');
     return Scaffold(
       appBar: AppBar(
@@ -18,9 +19,15 @@ class HomePage extends StatelessWidget {
       body: Center(
         child: Column(
           children: [
-            const LanguageWidget(),
-            const ThemeWidget(),
-            const NameWidget(),
+            ListTile(
+              title: const Text('Language:'),
+              trailing: Text(model.language),
+            ),
+            ListTile(
+              title: const Text('Theme mode:'),
+              trailing: Text(model.isDark ? "dark" : 'light'),
+            ),
+            ListTile(title: const Text('Name:'), trailing: Text(model.name)),
             TextButton(
               onPressed: () async => await Navigator.push(
                 context,
@@ -34,44 +41,5 @@ class HomePage extends StatelessWidget {
         ),
       ),
     );
-  }
-}
-
-class LanguageWidget extends StatelessWidget {
-  const LanguageWidget({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    log('LanguageWidget got (re)build');
-    final model = SettingsInheritedModel.of(context, SettingsAspect.language)!;
-    return ListTile(
-      title: const Text('Language:'),
-      trailing: Text(model.language),
-    );
-  }
-}
-
-class ThemeWidget extends StatelessWidget {
-  const ThemeWidget({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    log('ThemeWidget got (re)build');
-    final model = SettingsInheritedModel.of(context, SettingsAspect.theme)!;
-    return ListTile(
-      title: const Text('Theme mode:'),
-      trailing: Text(model.isDark ? "dark" : 'light'),
-    );
-  }
-}
-
-class NameWidget extends StatelessWidget {
-  const NameWidget({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    log('NameWidget got (re)build');
-    final model = SettingsInheritedModel.of(context, SettingsAspect.name)!;
-    return ListTile(title: const Text('Name:'), trailing: Text(model.name));
   }
 }
