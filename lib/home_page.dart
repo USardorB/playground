@@ -1,82 +1,77 @@
-import 'dart:math';
+import 'dart:developer';
 
 import 'package:flutter/material.dart';
-import 'package:playground/counter_service.dart';
-import 'package:playground/theme_inherited_widget.dart';
+import 'package:playground/settings_inherited_model.dart';
+import 'package:playground/settings_page.dart';
 
 class HomePage extends StatelessWidget {
-  const HomePage({
-    super.key,
-  });
+  const HomePage({super.key});
 
-  /// Not gonna be rebuild thanks for [NewWidget]'s [dependOnInheritedWidgetOfExactType]
   @override
   Widget build(BuildContext context) {
-    print('HomeBeingRebuild');
+    log('HomePage got (re)build');
     return Scaffold(
-      appBar: AppBar(title: const Text('Counter App'), centerTitle: true),
+      appBar: AppBar(
+        title: const Text('Current state of the app'),
+        centerTitle: true,
+      ),
       body: Center(
         child: Column(
           children: [
-            ValueListenableBuilder<int>(
-              valueListenable: CounterService(),
-              builder: (context, value, child) {
-                return Text(
-                  value.toString(),
-                  style: const TextStyle(
-                      fontSize: 32, fontWeight: FontWeight.w700),
-                );
-              },
-            ),
-            const NewWidget()
+            const LanguageWidget(),
+            const ThemeWidget(),
+            const NameWidget(),
+            TextButton(
+              onPressed: () async => await Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const SettingsPage(),
+                ),
+              ),
+              child: const Text('Settings page'),
+            )
           ],
         ),
       ),
-      floatingActionButton:
-          Row(mainAxisAlignment: MainAxisAlignment.end, spacing: 20, children: [
-        FloatingActionButton(
-          onPressed: CounterService().inc,
-          heroTag: 'HERO1',
-          child: const Icon(Icons.add_rounded),
-        ),
-        FloatingActionButton(
-          onPressed: CounterService().reset,
-          heroTag: 'HERO2',
-          child: const Icon(Icons.exposure_zero),
-        ),
-        FloatingActionButton(
-          onPressed: CounterService().dec,
-          heroTag: 'HERO3',
-          child: const Icon(Icons.horizontal_rule_rounded),
-        ),
-      ]),
     );
   }
 }
 
-class NewWidget extends StatelessWidget {
-  const NewWidget({super.key});
+class LanguageWidget extends StatelessWidget {
+  const LanguageWidget({super.key});
 
   @override
   Widget build(BuildContext context) {
-    print('NERwDWID');
-    final random = Random();
-    final inherited = ThemeInheritedWidget.of(context);
-    return InkWell(
-      onTap: inherited?.callback,
-      child: Card(
-        color: Color.fromARGB(
-          255, // Full opacity
-          random.nextInt(256),
-          random.nextInt(256),
-          random.nextInt(256),
-        ),
-        child: SizedBox(
-          height: 50,
-          width: 60,
-          child: Text((inherited?.isDark ?? false) ? 'Dark' : 'Light'),
-        ),
-      ),
+    log('LanguageWidget got (re)build');
+    final model = SettingsInheritedModel.of(context, SettingsAspect.language)!;
+    return ListTile(
+      title: const Text('Language:'),
+      trailing: Text(model.language),
     );
+  }
+}
+
+class ThemeWidget extends StatelessWidget {
+  const ThemeWidget({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    log('ThemeWidget got (re)build');
+    final model = SettingsInheritedModel.of(context, SettingsAspect.theme)!;
+    return ListTile(
+      title: const Text('Theme mode:'),
+      trailing: Text(model.isDark ? "dark" : 'light'),
+    );
+  }
+}
+
+class NameWidget extends StatelessWidget {
+  const NameWidget({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    log('NameWidget got (re)build');
+    final model = SettingsInheritedModel.of(context, SettingsAspect.name)!;
+    return ListTile(title: const Text('Name:'), trailing: Text(model.name));
   }
 }
